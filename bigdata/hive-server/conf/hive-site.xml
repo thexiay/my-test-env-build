@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>hive.server2.authentication</name>
+            <value>NONE</value>
+    </property>
+    <property>
+        <name>hive.execution.engine</name>
+        <value>mr</value>
+    </property>
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://hive-metastore:9083</value>
+    </property>
+
+    <!--需要这个配置，hive在，创表，创库等时候将其带进了localtionuri-->
+    <property>
+          <name>hive.metastore.warehouse.dir</name>
+          <value>s3a://hive/warehouse</value>
+          <description>hive使用的HDFS目录</description>
+    </property>
+        <property>
+        <name>fs.s3a.impl</name>
+        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
+    </property>
+    <property>
+        <name>fs.s3a.access.key</name>
+        <value>accesskey</value>
+    </property>
+    <property>
+        <name>fs.s3a.secret.key</name>
+        <value>secretkey</value>
+    </property>
+    <property>
+        <name>fs.s3a.endpoint</name>
+        <value>http://minio:9000</value>
+    </property>
+    <property>
+        <name>fs.s3a.path.style.access</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>fs.s3a.connection.ssl.enabled</name>
+        <value>false</value>
+    </property>
+</configuration>
