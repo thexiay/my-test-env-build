@@ -1,32 +1,15 @@
-FROM openjdk:8u342-jre
+FROM ubuntu:22.10 as builder
+WORKDIR /opt/hive
+RUN apt-get update && apt-get install --assume-yes wget && \
+    wget https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-hive-metastore/1.3.0/iceberg-hive-metastore-1.3.0.jar && \
+    wget -O- https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.19.tar.gz | tar zxf -
 
-RUN apt-get update \
- && apt-get install --assume-yes telnet \
- && apt-get clean
-
-WORKDIR /opt
-
-ENV HADOOP_VERSION=2.10.1
-ENV HADOOP_HOME=/opt/hadoop-${HADOOP_VERSION}
-ENV HIVE_HOME=/opt/hive
-
-# 删除log4j是为了防止加载错误的log4j，hive-meatastore日志不好排查了
-RUN wget -O- https://repo1.maven.org/maven2/org/apache/hive/hive-standalone-metastore/3.1.2/hive-standalone-metastore-3.1.2-bin.tar.gz | tar zxf - && \
-    mv /opt/apache-hive-metastore-3.1.2-bin /opt/hive && \
-    wget -O- https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/hadoop-2.10.1/hadoop-2.10.1.tar.gz | tar zxf - && \
-    rm -f /opt/hadoop-2.10.1/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar && \
-    wget -O- https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.19.tar.gz | tar zxf - && \
-    cp mysql-connector-java-8.0.19/mysql-connector-java-8.0.19.jar /opt/hive/lib/ && \
-    rm -rf  mysql-connector-java-8.0.19
-
-COPY scripts/entrypoint.sh /entrypoint.sh
-
-RUN groupadd -r hive --gid=1000 && \
-    useradd -r -g hive --uid=1000 -d ${HIVE_HOME} hive && \
-    chown hive:hive -R ${HIVE_HOME} && \
-    chown hive:hive /entrypoint.sh && chmod +x /entrypoint.sh
-
+FROM apache/hive:3.1.3 as runner
+COPY --from=builder /opt/hive/*.jar /opt/hive/mysql-connector-java-8.0.19/*.jar ${HIVE_HOME}/lib/
+COPY scripts/entrypoint.sh /opt/entrypoint.sh
+USER root
+RUN cp ${HADOOP_HOME}/share/hadoop/tools/lib/aws-java-sdk-bundle-* ${HIVE_HOME}/lib/ && \
+    cp ${HADOOP_HOME}/share/hadoop/tools/lib/hadoop-aws-* ${HIVE_HOME}/lib/ && \
+    chmod +x /opt/entrypoint.sh
 USER hive
-EXPOSE 9083
-
-ENTRYPOINT ["sh", "-c", "/entrypoint.sh"]
+ENTRYPOINT ["/opt/entrypoint.sh"]

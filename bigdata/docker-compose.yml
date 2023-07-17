@@ -32,6 +32,9 @@ services:
     image: thexia/hive-metastore:3.1.2
     ports:
       - 9083:9083
+    environment:
+      - SERVICE_NAME=metastore
+      - IS_RESUME=true
     volumes:
       - ./hive-metastore/conf:/opt/hive/conf
     depends_on: 
