@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install  -y wget && \
 FROM apache/hive:3.1.3 as runner
 USER root
 RUN mkdir /home/hive && \
-    chown hive:hive /home/hive
+    chown hive:hive /home/hive && \
+    rm -rf ${TEZ_HOME}
+# 删除tez因为classpath mapreduce冲突
 USER hive
 COPY --from=builder /opt/hive/* ${HIVE_HOME}/lib/

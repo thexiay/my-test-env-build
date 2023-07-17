@@ -10,6 +10,10 @@
         <value>mr</value>
     </property>
     <property>
+        <name>hive.exec.mode.local.auto</name>
+        <value>true</value>
+    </property>
+    <property>
         <name>hive.metastore.uris</name>
         <value>thrift://hive-metastore:9083</value>
     </property>
