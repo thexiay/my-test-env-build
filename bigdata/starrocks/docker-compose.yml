@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  starrocks:
+    image: starrocks.docker.scarf.sh/starrocks/allin1-ubuntu
+    ports:
+      - 9030:9030 
+      - 8030:8030 
+      - 8040:8040
+    volumes:
+      - starrocks-meta:/data/deploy/starrocks/fe/meta
+      - starrocks-storage:/data/deploy/starrocks/be/storage
+
+volumes:
+  starrocks-meta:
+  starrocks-storage:

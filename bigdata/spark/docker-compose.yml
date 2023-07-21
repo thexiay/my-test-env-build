@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  spark:
+    build: . 
+    image: thexia/spark:v3.2.4
+    volumes:
+      - ./conf:/opt/spark/conf
+    command: tail -f /dev/null
